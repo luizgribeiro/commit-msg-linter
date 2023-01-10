@@ -1,18 +1,10 @@
 const fs = require("fs");
 const exists = fs.existsSync;
 const path = require("path");
+
 /**
- * @param {string[]} projectDirectories
  * @returns {string}
  */
-module.exports.guessGitDirectory = (projectDirectories) =>
-  projectDirectories
-    .map((projectRoot) => path.resolve(projectRoot, ".git"))
-    .find(
-      (gitDirectory) =>
-        exists(gitDirectory) && fs.lstatSync(gitDirectory).isDirectory()
-    );
-
 module.exports.findGitBasePath = () => {
   let relativePath = "";
 
@@ -35,6 +27,10 @@ module.exports.findGitBasePath = () => {
           const gitDirectoryPath = fileContent.split("gitdir: ")[1];
           return path.resolve(process.cwd(), gitDirectoryPath);
         }
+      }
+
+      if (gitStats.isDirectory()) {
+        return currentGitPath;
       }
     } catch (error) {
       if (error.code === "ENOENT") {

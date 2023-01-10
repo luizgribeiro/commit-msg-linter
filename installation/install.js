@@ -8,7 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const { guessGitDirectory, findGitBasePath } = require("./utils/git");
+const { findGitBasePath } = require("./utils/git");
 const { bailOut } = require("./utils/bailOut");
 const {
   COMMIT_MSG_LABEL,
@@ -21,26 +21,15 @@ const { isHuskyInstall } = require("./strategies/ruskyStrategy");
 
 const exists = fs.existsSync;
 
-console.log(findGitBasePath());
-
-const projectRootList = [
-  process.cwd(),
-  PROJECT_ROOT,
-
-  // for pnpm: not a elegant solution 😓
-  path.resolve(__dirname, "../../.."),
-  path.resolve(__dirname, "../../../.."),
-  path.resolve(__dirname, "../../../../.."),
-];
-
-const git = guessGitDirectory(projectRootList);
+const git = findGitBasePath();
 
 // Bail out if we don't have an `.git` folder as the hooks will not get triggered.
 if (!git) {
   console.error(
-    `${PACKAGE_NAME_LABEL}: ${chalk.red(".git folder not found in")}`
+    `${PACKAGE_NAME_LABEL}: ${chalk.red(
+      ".git folder/file not found in current path or any parent"
+    )}`
   );
-  console.error(projectRootList);
   console.error(
     `${PACKAGE_NAME_LABEL}: ${chalk.red(`${PACKAGE_NAME} won't be installed`)}`
   );
